@@ -18,7 +18,7 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         if self.path == "/snakes":
 
-            response = get_all_snakes
+            response = get_all_snakes()
 
         else:
             response = []
