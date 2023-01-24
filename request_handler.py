@@ -1,5 +1,5 @@
 import json
-from views import get_all_snakes, get_all_species
+from views import get_all_snakes, get_all_species, get_all_owners
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
@@ -21,6 +21,9 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         elif self.path == "/species":
             response = get_all_species()
+
+        elif self.path == "/owners":
+            response = get_all_owners()
 
         else:
             response = []
