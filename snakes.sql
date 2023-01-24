@@ -93,3 +93,15 @@ insert into Snakes (id, name, owner_id, species_id, gender, color) values (30, '
             c.color
         from Snakes c
         WHERE c.species_id = 2
+
+  SELECT
+            s.id,
+            s.name,
+            s.owner_id,
+            s.species_id,
+            s.gender,
+            s.color,
+			p.name name
+        FROM Snakes s
+		JOIN Species p ON p.id = s.species_id
+        WHERE s.id = 1

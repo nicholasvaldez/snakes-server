@@ -42,8 +42,12 @@ class HandleRequests(BaseHTTPRequestHandler):
 
             if resource == "snakes":
                 if id is not None:
-                    self._set_headers(200)
                     response = get_single_snake(id)
+                    if response is not None:
+                        self._set_headers(200)
+                    else:
+                        self._set_headers(405)
+
                 else:
                     self._set_headers(200)
                     response = get_all_snakes()

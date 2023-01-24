@@ -1,6 +1,6 @@
 import sqlite3
 import json
-from models import Snake
+from models import Snake, Species
 
 
 def get_all_snakes():
@@ -57,20 +57,38 @@ def get_single_snake(id):
             s.owner_id,
             s.species_id,
             s.gender,
-            s.color
+            s.color,
+			p.name species_name
         FROM Snakes s
+		JOIN Species p ON p.id = s.species_id
         WHERE s.id = ?
         """, (id, ))
 
         # Load the single result into memory
-        data = db_cursor.fetchone()
+        dataset = db_cursor.fetchall()
 
-        # Create an animal instance from the current row
-        snake = Snake(data['id'], data['name'], data['owner_id'],
-                      data['species_id'], data['gender'],
-                      data['color'])
+        snakes = []
 
-        return snake.__dict__
+        for row in dataset:
+
+            snake = Snake(row['id'], row['name'], row['owner_id'],
+                          row['species_id'], row['gender'],
+                          row['color'])
+
+            species = Species(row['species_id'], row['species_name'])
+
+            snake.species = species.__dict__
+
+            snakes.append(snake.__dict__)
+
+            if snake.species_id == 2:
+                snakes = {
+                    "message": "no snake here"
+                }
+
+            else:
+
+                return snakes
 
 
 def get_snakes_by_species(species_id):
