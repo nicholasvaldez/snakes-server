@@ -32,7 +32,6 @@ class HandleRequests(BaseHTTPRequestHandler):
     def do_GET(self):
         """Handles GET requests to the server
         """
-        self._set_headers(200)
 
         response = {}
 
@@ -40,21 +39,28 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         if resource == "snakes":
             if id is not None:
+                self._set_headers(200)
                 response = get_single_snake(id)
             else:
+                self._set_headers(200)
                 response = get_all_snakes()
         elif resource == "species":
             if id is not None:
+                self._set_headers(200)
                 response = get_single_species(id)
             else:
+                self._set_headers(200)
                 response = get_all_species()
         elif resource == "owners":
             if id is not None:
+                self._set_headers(200)
                 response = get_single_owner(id)
             else:
+                self._set_headers(200)
                 response = get_all_owners()
 
         else:
+            self._set_headers(404)
             response = []
 
         self.wfile.write(json.dumps(response).encode())
