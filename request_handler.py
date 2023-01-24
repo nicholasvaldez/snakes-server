@@ -1,7 +1,7 @@
 import json
 from urllib.parse import urlparse, parse_qs
 
-from views import get_all_snakes, get_all_species, get_all_owners, get_single_snake, get_single_owner
+from views import get_all_snakes, get_all_species, get_all_owners, get_single_snake, get_single_owner, get_single_species
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
@@ -44,8 +44,10 @@ class HandleRequests(BaseHTTPRequestHandler):
             else:
                 response = get_all_snakes()
         elif resource == "species":
-            response = get_all_species()
-
+            if id is not None:
+                response = get_single_species(id)
+            else:
+                response = get_all_species()
         elif resource == "owners":
             if id is not None:
                 response = get_single_owner(id)
