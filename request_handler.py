@@ -1,7 +1,7 @@
 import json
 from urllib.parse import urlparse, parse_qs
 
-from views import get_all_snakes, get_all_species, get_all_owners, get_single_snake, get_single_owner, get_single_species, get_snakes_by_species
+from views import get_all_snakes, get_all_species, get_all_owners, get_single_snake, get_single_owner, get_single_species, get_snakes_by_species, create_snake
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
@@ -81,14 +81,22 @@ class HandleRequests(BaseHTTPRequestHandler):
         self.wfile.write(json.dumps(response).encode())
 
     def do_POST(self):
-        """Handles POST requests to the server"""
-
-        self._set_headers(201)
-
         content_len = int(self.headers.get('content-length', 0))
         post_body = self.rfile.read(content_len)
-        response = {"payload": post_body}
-        self.wfile.write(json.dumps(response).encode())
+
+        post_body = json.loads(post_body)
+
+        (resource, id) = self.parse_url(self.path)
+
+        new_snake = None
+
+        if resource == "snakes":
+            if "name" in post_body and "owner_id" in post_body and "species_id" and "gender" and "color" in post_body:
+                self._set_headers(201)
+                new_snake = create_snake(post_body)
+                self.wfile.write(json.dumps(new_snake))
+            else:
+                self._set_headers(400)
 
     def do_PUT(self):
         """Handles PUT requests to the server"""

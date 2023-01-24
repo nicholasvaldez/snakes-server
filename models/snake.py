@@ -1,3 +1,4 @@
+
 class Snake():
 
     # Class initializer. It has 5 custom parameters, with the

@@ -19,8 +19,10 @@ def get_all_snakes():
             s.owner_id,
             s.species_id,
             s.gender,
-            s.color
+            s.color,
+			p.name species_name
         FROM Snakes s
+		JOIN Species p ON p.id = s.species_id
         """)
 
         # Initialize an empty list to hold all snake representations
@@ -39,6 +41,10 @@ def get_all_snakes():
             snake = Snake(row['id'], row['name'], row['owner_id'],
                           row['species_id'], row['gender'],
                           row['color'])
+
+            species = Species(row['species_id'], row['species_name'])
+
+            snake.species = species.__dict__
 
             snakes.append(snake.__dict__)
 
@@ -119,3 +125,21 @@ def get_snakes_by_species(species_id):
             snakes.append(snake.__dict__)
 
     return snakes
+
+
+def create_snake(new_snake):
+    with sqlite3.connect("./snakes.sqlite3") as conn:
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        INSERT INTO Snakes
+            ( name, owner_id, species_id, gender, color )
+        VALUES
+            ( ?, ?, ?, ?, ?);
+        """, (new_snake['name'], new_snake['owner_id'], new_snake['species_id'], new_snake['gender'], new_snake['color']))
+
+        id = db_cursor.lastrowid
+
+        new_snake['id'] = id
+
+    return new_snake
