@@ -71,3 +71,33 @@ def get_single_snake(id):
                       data['color'])
 
         return snake.__dict__
+
+
+def get_snakes_by_species(species_id):
+
+    with sqlite3.connect("./snakes.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        # Write the SQL query to get the information you want
+        db_cursor.execute("""
+        select
+            c.id,
+            c.name,
+            c.owner_id,
+            c.species_id,
+            c.gender,
+            c.color
+        from Snakes c
+        WHERE c.species_id = ?
+        """, (species_id, ))
+
+        snakes = []
+        dataset = db_cursor.fetchall()
+
+        for row in dataset:
+            snake = Snake(row['id'], row['name'], row['owner_id'],
+                          row['species_id'], row['gender'], row['color'])
+            snakes.append(snake.__dict__)
+
+    return snakes
