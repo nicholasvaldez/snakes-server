@@ -97,6 +97,12 @@ class HandleRequests(BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps(new_snake))
             else:
                 self._set_headers(400)
+                new_snake = {
+                    "message": f'{"name is required"}' if "name" not in post_body else "" f'{"gender is required"}' if "gender" not in post_body else "" f'{"color is required"}' if "color" not in post_body else "" f'{"owner_id is required"}' if "owner_id" not in post_body else "" f'{"species_id is required"}' if "species_id" not in post_body else ""
+                }
+
+                # Encode the new location and send in response
+                self.wfile.write(json.dumps(new_snake).encode())
 
     def do_PUT(self):
         """Handles PUT requests to the server"""
