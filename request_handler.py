@@ -1,5 +1,7 @@
 import json
-from views import get_all_snakes, get_all_species, get_all_owners
+from urllib.parse import urlparse, parse_qs
+
+from views import get_all_snakes, get_all_species, get_all_owners, get_single_snake
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
@@ -9,20 +11,42 @@ class HandleRequests(BaseHTTPRequestHandler):
     """Controls the functionality of any GET, PUT, POST, DELETE requests to the server
     """
 
+    def parse_url(self, path):
+        """Parse the url into the resource and id"""
+
+        parsed_url = urlparse(path)
+        path_params = parsed_url.path.split('/')
+        resource = path_params[1]
+
+        if parsed_url.query:
+            query = parse_qs(parsed_url.query)
+            return (resource, query)
+
+        pk = None
+        try:
+            pk = int(path_params[2])
+        except (IndexError, ValueError):
+            pass
+        return (resource, pk)
+
     def do_GET(self):
         """Handles GET requests to the server
         """
         self._set_headers(200)
 
-        print(self.path)
+        response = {}
 
-        if self.path == "/snakes":
-            response = get_all_snakes()
+        (resource, id) = self.parse_url(self.path)
 
-        elif self.path == "/species":
+        if resource == "snakes":
+            if id is not None:
+                response = get_single_snake(id)
+            else:
+                response = get_all_snakes()
+        elif resource == "species":
             response = get_all_species()
 
-        elif self.path == "/owners":
+        elif resource == "owners":
             response = get_all_owners()
 
         else:

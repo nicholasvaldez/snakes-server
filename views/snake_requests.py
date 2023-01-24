@@ -43,3 +43,31 @@ def get_all_snakes():
             snakes.append(snake.__dict__)
 
     return snakes
+
+
+def get_single_snake(id):
+    with sqlite3.connect("./snakes.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        SELECT
+            s.id,
+            s.name,
+            s.owner_id,
+            s.species_id,
+            s.gender,
+            s.color
+        FROM Snakes s
+        WHERE s.id = ?
+        """, (id, ))
+
+        # Load the single result into memory
+        data = db_cursor.fetchone()
+
+        # Create an animal instance from the current row
+        snake = Snake(data['id'], data['name'], data['owner_id'],
+                      data['species_id'], data['gender'],
+                      data['color'])
+
+        return snake.__dict__
