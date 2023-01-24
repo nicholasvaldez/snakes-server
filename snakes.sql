@@ -28,7 +28,7 @@ insert into Owners (id, first_name, last_name, email) values (10, 'Ulick', 'Drin
 
 
 create table Snakes (
-	id INT,
+	`id`    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 	name VARCHAR(50),
 	owner_id INT,
 	species_id INT,
@@ -105,3 +105,5 @@ insert into Snakes (id, name, owner_id, species_id, gender, color) values (30, '
         FROM Snakes s
 		JOIN Species p ON p.id = s.species_id
         WHERE s.id = 1
+
+DROP TABLE Snakes
