@@ -1,7 +1,7 @@
 import json
 from urllib.parse import urlparse, parse_qs
 
-from views import get_all_snakes, get_all_species, get_all_owners, get_single_snake, get_single_owner, get_single_species
+from views import get_all_snakes, get_all_species, get_all_owners, get_single_snake, get_single_owner, get_single_species, get_snakes_by_species
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
@@ -11,11 +11,11 @@ class HandleRequests(BaseHTTPRequestHandler):
     """Controls the functionality of any GET, PUT, POST, DELETE requests to the server
     """
 
+    # replace the parse_url function in the class
     def parse_url(self, path):
         """Parse the url into the resource and id"""
-
         parsed_url = urlparse(path)
-        path_params = parsed_url.path.split('/')
+        path_params = parsed_url.path.split('/')  # ['', 'animals', 1]
         resource = path_params[1]
 
         if parsed_url.query:
@@ -35,33 +35,44 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         response = {}
 
-        (resource, id) = self.parse_url(self.path)
+        parsed = self.parse_url(self.path)
 
-        if resource == "snakes":
-            if id is not None:
-                self._set_headers(200)
-                response = get_single_snake(id)
+        if '?' not in self.path:
+            (resource, id) = parsed
+
+            if resource == "snakes":
+                if id is not None:
+                    self._set_headers(200)
+                    response = get_single_snake(id)
+                else:
+                    self._set_headers(200)
+                    response = get_all_snakes()
+            elif resource == "species":
+                if id is not None:
+                    self._set_headers(200)
+                    response = get_single_species(id)
+                else:
+                    self._set_headers(200)
+                    response = get_all_species()
+            elif resource == "owners":
+                if id is not None:
+                    self._set_headers(200)
+                    response = get_single_owner(id)
+                else:
+                    self._set_headers(200)
+                    response = get_all_owners()
+
             else:
-                self._set_headers(200)
-                response = get_all_snakes()
-        elif resource == "species":
-            if id is not None:
-                self._set_headers(200)
-                response = get_single_species(id)
-            else:
-                self._set_headers(200)
-                response = get_all_species()
-        elif resource == "owners":
-            if id is not None:
-                self._set_headers(200)
-                response = get_single_owner(id)
-            else:
-                self._set_headers(200)
-                response = get_all_owners()
+                self._set_headers(404)
+                response = []
 
         else:
-            self._set_headers(404)
-            response = []
+            self._set_headers(200)
+
+            (resource, query) = parsed
+
+            if query.get('species_id') and resource == 'snakes':
+                response = get_snakes_by_species(query['species_id'][0])
 
         self.wfile.write(json.dumps(response).encode())
 

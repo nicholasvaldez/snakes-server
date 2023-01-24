@@ -82,3 +82,14 @@ insert into Snakes (id, name, owner_id, species_id, gender, color) values (30, '
             s.color
         FROM Snakes s
         WHERE s.id = 1
+
+
+		select
+            c.id,
+            c.name,
+            c.owner_id,
+            c.species_id,
+            c.gender,
+            c.color
+        from Snakes c
+        WHERE c.species_id = 2
